@@ -155,14 +155,6 @@ int main()
     }
 
 
-    // for (int i = 0; i< time.size(); ++i){
-    //     std::cout << time[i] << std::endl;
-
-    // }
-
-    // plt::plot({1,2,3,4});
-    // plt::show();
-
 
 
 
