@@ -3,6 +3,7 @@
 #include "..\include\constants.h"
 #include "..\include\matplotlibcpp.h"
 #include "..\include\dubins_car.h"
+#include "..\include\car_model_state.h"
 #include <conio.h>
 #include <Windows.h>
 
@@ -90,7 +91,20 @@ int main()
     
     dubins_car car;
     cartesian_v car_cartesian_v;
+    car_model_state states;
     float velocity = 0;
+    float desired_velocity = 0;
+    states.v = velocity;
+    states.v_des = desired_velocity;
+    states.phi_ddot_l = 0;
+    states.phi_ddot_r = 0;
+    states.phi_dot_l = 0;
+    states.phi_dot_r = 0;
+    states.u_r = 0;
+    states.u_l = 0;
+    states.omega = 0;
+
+    float desired_theta = 0;
     float theta = 0;
     int quit = 0;
     while (quit == 0){
@@ -101,29 +115,30 @@ int main()
             key = _getch();
             if (key == 'w')
                 {
-                    std::cout << "Speeding up (" << velocity <<" m/s)" << std::endl;
-                    velocity += 0.1;
+                    std::cout << "Speeding up (" << desired_velocity <<" m/s)" << std::endl;
+                    desired_velocity += 0.1;
                 }
 
             if (key == 's')
                 {
                     std::cout << "Stop Vehicle" << std::endl;
-                    velocity = 0;
+                    desired_velocity = 0;
+                    desired_theta = 0;
                 }
             if (key == 'x')
                 {
-                    std::cout << "Reverse  (" << velocity <<" m/s)" << std::endl;
-                    velocity -= 0.1;
+                    std::cout << "Reverse  (" << desired_velocity <<" m/s)" << std::endl;
+                    desired_velocity -= 0.1;
                 }
             if (key == 'a')
                 {
                     std::cout << "Turn Left" << std::endl;
-                    theta += .1;
+                    desired_theta += .1;
                 }
             if (key == 'd')
                 {
                     std::cout << "Turn Right" << std::endl;
-                    theta -= .1;
+                    desired_theta -= .1;
                 }
             if (key == 'q')
                 {
@@ -131,7 +146,30 @@ int main()
 
                     quit = 1;
             }
+            if (key == 'e')
+                {
+                    std::cout << "Stop Turning" << std::endl;
+
+                    desired_theta = 0;
+            }
         }
+        states.v_des = desired_velocity;
+        states.omega_des = desired_theta;
+        states = car.car_model(states);
+        
+        // If you want the car model values
+        velocity = states.v;
+        theta = theta + states.omega*dt;
+
+
+
+        
+
+        
+        // // If you want the desired values to equal the true values
+        // theta = desired_theta;
+        // velocity = desired_velocity;
+
         car_cartesian_v = car.get_cartesian_v(velocity, theta);
 
         // std::cout << "Y Velocity: " << car_cartesian_v.vel_y << std::endl;
