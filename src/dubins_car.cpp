@@ -12,7 +12,7 @@
 
 dubins_car::dubins_car(){
 
-    std::cout << "Dubins Car Read to Drive" << std::endl;
+    std::cout << "Dubins Car Ready to Drive" << std::endl;
 
 };
 

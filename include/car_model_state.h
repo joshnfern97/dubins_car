@@ -18,6 +18,9 @@ struct car_model_state {
     float phi_dot_r_error;
     float phi_dot_l_error;
     float dt;
+    float car_x;
+    float target_error_x;
+    float target_error_d;
 };
 
 #endif // MYSTRUCT_HPP
