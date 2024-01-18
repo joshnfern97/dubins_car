@@ -10,36 +10,11 @@
 
 
 
-// dubins_car::dubins_car(){
+dubins_car::dubins_car(){
 
-//     float R = 0.254;
-//     float L = 0.1905;
+    std::cout << "Dubins Car Read to Drive" << std::endl;
 
-//     float phi_dot_max = 12;
-//     float phi_ddot_max = 54;
-
-//     float Tau = 0.25;
-//     float K = 10/12;
-
-    
-
-//     float p_r = 20;
-//     float i_r = 10;
-//     float d_r = 0;
-//     float i_max_r =5;
-
-//     float p_l = 20;
-//     float i_l = 10;
-//     float d_l = 0;
-//     float i_max_l = 1;
-//     float dt = 0.01;
-    
-
-
-
-
-
-// };
+};
 
 
 
@@ -53,25 +28,27 @@ cartesian_v dubins_car::get_cartesian_v(float velocity, float theta){
 
 car_model_state dubins_car::car_model(car_model_state states){
     
-    
+    //used to find phi_ddot from phi_dot (experimentally determined)
     Eigen::MatrixXd A(2,2);
     A << -1/this->Tau, 0, 
           0, -1/this->Tau;
 
+    //used to convert inputs (from PID controller) to phi_ddot (experimentally determined)
     Eigen::MatrixXd B(2,2);
     B << this->K/this->Tau, 0, 
           0, this->K/this->Tau;
 
+    // used to convert phi_dot to velocity and twist of the robot (from robot geometry)
     Eigen::MatrixXd C(2,2);
     C << this->R/2, this->R/2, 
          this->R/(2*this->L), -1*this->R/(2*this->L);
 
-    
+    //find the desired wheel velocities from the desired velocity and twist of the robot (from robot geometry)
     states.phi_dot_r_des = (states.omega_des*this->L/this->R) + states.v_des/this->R;
     states.phi_dot_l_des = (states.v_des/this->R) - (states.omega_des*this->L/this->R);
     Eigen::MatrixXd x(2,1);
 
-    
+    //find error between desired and actual
     states.phi_dot_l_error = states.phi_dot_l_des - states.phi_dot_l;
     states.phi_dot_r_error = states.phi_dot_r_des - states.phi_dot_r;
 
@@ -91,6 +68,8 @@ car_model_state dubins_car::car_model(car_model_state states){
     Eigen::MatrixXd y(2,1);
 
     //perform state space multiplication
+    //x_dot gives us wheel angular acceleration
+    //y gives us velocity and twist of the robot
     x_dot = A*x + B*u;
     y = C*x;
 

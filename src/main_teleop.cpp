@@ -20,34 +20,11 @@ namespace plt = matplotlibcpp;
 int main()
 {
     //Intialize Car States
-    std::vector<float> phi_dot_r(1,0);
-    std::vector<float> phi_dot_r_des(1,0);
-    std::vector<float> phi_dot_r_error(1,0);
-    std::vector<float> phi_dot_l(1,0);
-    std::vector<float> phi_dot_l_des(1,0);
-    std::vector<float> phi_dot_l_error(1,0);
-    std::vector<float> u_r(1,0);
-    std::vector<float> u_l(1,0);
-    std::vector<float> phi_ddot_r(1,0);
-    std::vector<float> phi_ddot_l(1,0);
-    std::vector<float> v(1,0);
-    std::vector<float> omega(1,0);
-    std::vector<float> time(1,0);
-    std::vector<float> x_pos(1,0);
-    // std::vector<float> theta_pos(1,0);
-    std::vector<float> theta_pos(1,3.14/2);
-    std::vector<float> car_v_des(1,0);
-    std::vector<float> car_omega_des(1,0);
-    std::vector<float> robot_compass_heading_array(1,0);
     std::vector<float> x_car_pos(1,0);
     std::vector<float> y_car_pos(1,0);
-
-
-   
-    // float x_car_pos = 0;
-    // float y_car_pos = 0;
-    float V_desired = 0;
-    float u_desired = 0;
+    float desired_theta = 0;
+    float theta = 0;
+    int quit = 0;
 
     //Unit vector used to plot robot/human coordinate systems
     Eigen::MatrixXd x_unit(4,1);
@@ -89,6 +66,7 @@ int main()
     float l_wheel_x;
     float l_wheel_y;
     
+    //define car and states
     dubins_car car;
     cartesian_v car_cartesian_v;
     car_model_state states;
@@ -104,11 +82,9 @@ int main()
     states.u_l = 0;
     states.omega = 0;
 
-    float desired_theta = 0;
-    float theta = 0;
-    int quit = 0;
+    
     while (quit == 0){
-        
+        //Look for input from user
         char key = ' ';
         if (_kbhit())
         {
@@ -153,48 +129,43 @@ int main()
                     desired_theta = 0;
             }
         }
+
+        //get the true states of the car from the car model
         states.v_des = desired_velocity;
         states.omega_des = desired_theta;
         states = car.car_model(states);
         
-        // If you want the car model values
+        // If you want the car model values as true values
         velocity = states.v;
         theta = theta + states.omega*dt;
-
-
-
-        
 
         
         // // If you want the desired values to equal the true values
         // theta = desired_theta;
         // velocity = desired_velocity;
 
+        //get the car position in x-y coordinates
         car_cartesian_v = car.get_cartesian_v(velocity, theta);
 
-        // std::cout << "Y Velocity: " << car_cartesian_v.vel_y << std::endl;
-
-        // time.push_back(time[i-1]+dt);
-        // theta_pos.push_back(theta_pos[i-1]+ .01);
-
+        //car position
         car_pos << x_car_pos[0], y_car_pos[0], 0, 1;
 
+        //Homogenous Transformation Matrix
         T_world_car << cos(theta), -1*sin(theta), 0, x_car_pos[0],
                        sin(theta),    cos(theta), 0, y_car_pos[0],
                        0, 0, 1, 0,
                        0, 0, 0, 1;  
 
+        //Rotate axes
         x_frame_car = T_world_car*x_unit;
         y_frame_car = T_world_car*y_unit;
 
-        // std::cout << "Theta: " << theta << std::endl;
-        
+        //Rotate wheels
         r_wheel_in_world = T_world_car*right_wheel_pos;
         l_wheel_in_world = T_world_car*left_wheel_pos;
-        // std::cout << r_wheel_in_world << std::endl;
-        // std::cout << "----------" << std::endl;
         
-
+        
+        //get coordinates of axes for plotting
         x_frame_car_tip_x = x_frame_car(0,0);
         x_frame_car_tip_y = x_frame_car(1,0);
         y_frame_car_tip_x = y_frame_car(0,0);
@@ -205,6 +176,7 @@ int main()
         std::vector<float> y_axis_x = {x_car_pos[0], y_frame_car_tip_x};
         std::vector<float> y_axis_y = {y_car_pos[0], y_frame_car_tip_y};
         
+        //get coordinates of wheels for plotting
         r_wheel_x = r_wheel_in_world(0,0);
         r_wheel_y = r_wheel_in_world(1,0);
         l_wheel_x = l_wheel_in_world(0,0);
@@ -215,6 +187,7 @@ int main()
         std::vector<float> l_wheel_in_world_y = {l_wheel_y};
 
 
+        //update car position
         x_car_pos[0] = x_car_pos[0] + car_cartesian_v.vel_x*dt;
         y_car_pos[0] = y_car_pos[0] + car_cartesian_v.vel_y*dt;
         

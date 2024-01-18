@@ -46,7 +46,7 @@ class dubins_car
 
 
     public:
-        // dubins_car();
+        dubins_car();
         cartesian_v get_cartesian_v(float velocity, float theta);
         car_model_state car_model(car_model_state states);
         car_model_state PID(car_model_state states);
