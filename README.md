@@ -12,4 +12,8 @@
 ##### - "e" = stop turning
 ##### - "q" = quit program
 
+##### Note that in this program, when turning, you are increasing the angular velocity of the vehicle and switching turning direction will not instantly stop you from turning (it will just decrease the rate of the turn). Therefore, if you want to completely stop turning, then use "e". 
+
+##### To run the script, you have to include the header file "matplotlibcpp.h" for visualization. Additionally, to compile, you can use the "build_main_teleop.bat" (windows) as template. Note, that you will need to include your path to eigen (https://eigen.tuxfamily.org/dox/GettingStarted.html), Python, and your numpy package within python. Additionally, you will need to link your python version. See this video for more clear details (https://www.youtube.com/watch?v=43Wp_qxyXDM).
+
 
