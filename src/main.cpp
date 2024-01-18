@@ -11,11 +11,7 @@
  
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
-// using Eigen::Matrix;
-/*
-When compiling:
-g++ -I C:\Users\jfernandez75\Documents\eigen-3.4.0 test_eigen.cpp -o test_eigen
-*/
+
 namespace plt = matplotlibcpp;
 
 int main()
@@ -99,9 +95,9 @@ int main()
     float d_desired = 0;
 
 
-    ///////////////////////////////////
-    //Setup High-level PID controller
-    //////////////////////////////////
+    ////////////////////////////////////
+    //Setup High-level PID controller //
+    ////////////////////////////////////
     //linear PID
     float p_lin = 5;
     float i_lin = 1;
@@ -251,10 +247,6 @@ int main()
         
         plt::pause(0.01);
     }
-
-
-
-
 
 
 }
